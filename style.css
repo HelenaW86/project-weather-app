@@ -22,7 +22,7 @@ body {
   font-size: 21px;
 }
 .wrapper {
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 .city {
@@ -37,7 +37,7 @@ body {
 
 .city h1 {
   margin: 0;
-  font-size: 37px;
+  font-size: 30px;
 }
 
 .week-wrap {
@@ -68,18 +68,37 @@ body {
 }
 
 .rainy {
-  color: #164A68;
-  background-color: #A3DEF7;
+  color: #164a68;
+  background-color: #a3def7;
 }
 
 .cloudy {
-  color: #F47775;
-  background-color: #F4F7F8;
+  color: #f47775;
+  background-color: #f4f7f8;
 }
-
+.snow {
+  color: #6c2e88;
+  background-color: #e9e0e7;
+}
 .unpredictable {
-  color: #862C4D;
-  background-color: #BFE2E0;
+  color: #862c4d;
+  background-color: #bfe2e0;
+}
+.place {
+  font-size: 37px;
+  line-height: 1.5;
+}
+footer {
+  text-align: center;
+  padding: 20px;
+}
+.input {
+  font-size: 18px;
+  border-radius: 5px;
+}
+.input-button {
+  font-size: 20px;
+  border-radius: 8px;
 }
 
 @media (min-width: 768px) {

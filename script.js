@@ -11,17 +11,28 @@ const API_URL_FORECAST_BERLIN =
 const API_URL_FORECAST_COPENHAGEN =
   "https://api.openweathermap.org/data/2.5/forecast?q=Copenhagen,Sweden&units=metric&APPID=7678391e67f390dcfc1cc2681209fd22";
 
+const body = document.getElementById("body");
 const weatherContainer = document.getElementById("weather-container");
 const currentWeather = document.getElementById("currentWeatherSunrise");
 const cityName = document.getElementById("cityName");
 const weatherForecast = document.getElementById("weatherForecast");
 const buttonCity = document.getElementById("button");
 const image = document.getElementById("imageButton");
+const searchButton = document.getElementById("citySearchButton");
+const chosenCity = document.getElementById("chosenCity");
+
+const API_KEY = "7678391e67f390dcfc1cc2681209fd22";
+
+let city = "Stockholm";
 
 const getWeather = (data) => {
+  const timezoneOffset = new Date().getTimezoneOffset() * 60;
   const temperature = Math.round(data.main.temp * 10) / 10;
-  const sunrise = data.sys.sunrise;
-  const sunset = data.sys.sunset;
+  const sunrise = data.sys.sunrise + data.timezone + timezoneOffset;
+  const sunset = data.sys.sunset + data.timezone + timezoneOffset;
+  let description = data.weather[0].description;
+
+  description = description.charAt(0).toUpperCase() + description.slice(1);
 
   // Converter for sunrise & sunset time to wanted format
   const convert = (t) => {
@@ -35,9 +46,8 @@ const getWeather = (data) => {
   const sunsetTime = convert(sunset);
 
   currentWeather.innerHTML += /*html*/ `
-        <h3 class="current-statements">${
-          data.weather[0].description
-        } | ${temperature}°</h3>
+        <h3 class="current-statements">
+        ${description} | ${Math.round(data.main.temp)}°</h3>
         <h3 class="current-statements">sunrise ${sunriseTime}</h3>
         <h3 class="current-statements">sunset ${sunsetTime}</h3>
         <h3 class="current-statements">wind ${Math.round(
@@ -46,47 +56,78 @@ const getWeather = (data) => {
     `;
 
   const changeRecomendation = () => {
+    body.classList.remove(...body.classList);
+
     if (data.weather[0].main === "Clear") {
       cityName.innerHTML += /*html*/ `
                 <img src="/Designs/Design-2/icons/noun_Sunglasses_2055147.svg" alt="Sunglasses icon">
-                <h1>Get your sunnies on.</h1>
-                <h1>${data.name} is looking rather great today.</h1>
+                <h1>Get your sunnies on.
+                <span class="place">${data.name}</span> is looking rather great today.</h1>
             `;
-      document.body.style.backgroundColor = "#f7e9b9";
-      document.body.style.color = "#2a5510";
+      body.classList.add("sunny");
+      chosenCity.style.borderColor = "#2a5510";
+      searchButton.style.backgroundColor = "#f7e9b9";
+      searchButton.style.color = "#2a5510";
+      searchButton.style.borderColor = "#2a5510";
       buttonCity.style.background =
         'url("/Designs/buttons_weatherapp/button_sunny.svg")';
-    } else if (data.weather[0].main === "Rain") {
+    } else if (
+      data.weather[0].main === "Rain" ||
+      data.weather[0].main === "Drizzle"
+    ) {
       cityName.innerHTML += /*html*/ `
                 <img src="/Designs/Design-2/icons/noun_Umbrella_2030530.svg" alt="Rain icon"/>
-                <h1>Don't forget your umbrella. </h1>
-                <h1>It's wet in ${data.name} today.</h1>
+                <h1>Don't forget your umbrella.
+                It's wet in <span class="place">${data.name}</span> today.</h1>
             `;
-      document.body.style.backgroundColor = "#A3DEF7";
-      document.body.style.color = "#164A68";
+
+      searchButton.style.backgroundColor = "#A3DEF7";
+      searchButton.style.color = "#164A68";
+      searchButton.style.borderColor = "#164A68";
+      chosenCity.style.borderColor = "#164A68";
+      body.classList.add("rainy");
       buttonCity.style.background =
         'url("/Designs/buttons_weatherapp/button_rain.svg")';
     } else if (data.weather[0].main === "Clouds") {
       cityName.innerHTML += /*html*/ `
                 <img src="/Designs/Design-2/icons/noun_Cloud_1188486.svg" alt="Clound icon"/>
-                <h1>Light a fire and get cosy. </h1>
-                <h1>${data.name} is looking grey today.</h1>
+                <h1>Light a fire and get cosy.
+                <span class="place">${data.name}</span> is looking grey today.</h1>
             `;
-      document.body.style.backgroundColor = "#F4F7F8";
-      document.body.style.color = "#F47775";
+      searchButton.style.backgroundColor = "#F4F7F8";
+      searchButton.style.color = "#F47775";
+      searchButton.style.borderColor = "#F47775";
+      chosenCity.style.borderColor = "#F47775";
+      body.classList.add("cloudy");
       buttonCity.style.background =
         'url("/Designs/buttons_weatherapp/button_clouds.svg")';
+    } else if (data.weather[0].main === "Snow") {
+      cityName.innerHTML += /*html*/ `
+            <img src='assets/icons/icon-snowflake.svg' alt='Snowflake'/>
+            <h1>Light a fire and get cozy. It's snowing in <span class="place">${data.name}</span> today.</h1>
+        `;
+      searchButton.style.backgroundColor = "#e9e0e7";
+      searchButton.style.color = "#6c2e88";
+      searchButton.style.borderColor = "#6c2e88";
+      chosenCity.style.borderColor = "#6c2e88";
+      body.classList.add("snow");
+      buttonCity.style.background =
+        'url("/Designs/buttons_weatherapp/button_snow.svg")';
     } else {
       cityName.innerHTML += /*html*/ `
                 <img src="/Designs/Design-2/icons/noun_Other_862C4D.svg" alt="Unpredictable weather icon"/>
-                <h1>Prepare for everything!</h1>
-                <h1>${data.name} is unpredictable today.</h1>
+                <h1>Prepare for everything!
+                <span class="place">${data.name}</span> is unpredictable today.</h1>
             `;
-      document.body.style.backgroundColor = "#BFE2E0";
-      document.body.style.color = "#862C4D";
+      searchButton.style.backgroundColor = "#BFE2E0";
+      searchButton.style.color = "#862C4D";
+      searchButton.style.borderColor = "#862C4D";
+      chosenCity.style.borderColor = "#862C4D";
+      body.classList.add("unpredictable");
       buttonCity.style.background =
         'url("/Designs/buttons_weatherapp/button_other.svg")';
     }
+    description = description.charAt(0).toUpperCase() + description.slice(1);
   };
   changeRecomendation();
 };
@@ -97,7 +138,6 @@ const getForecast = (data) => {
   ); // array
 
   const tempForecastFiveDays = tempForecast.map((listItem) => {
-    console.log(listItem.main.temp);
     const dateVariable = new Date(listItem.dt * 1000).getDay(); // gives us 2 as today is tuesday
     const now = new Date().getDay();
     const isToday = dateVariable === now;
@@ -117,25 +157,6 @@ const getForecast = (data) => {
     }
   });
 };
-
-// const testWeatherStockholm = fetch(API_URL_STOCKHOLM);
-// const testForecastStockholm = fetch(API_URL_FORECAST_STOCKHOLM);
-// we tried to implement Promise.all, but then the fetch distroyed the button flow
-// const fetchWeatherStockholm = () => {
-//   // we tried but it did not work
-//   Promise.all([testWeatherStockholm, testForecastStockholm])
-//     .then((responses) => {
-//       console.log(responses);
-//       const arrayOfResponses = responses.map((responses) => responses.json());
-//       console.log(arrayOfResponses);
-//       return Promise.all(arrayOfResponses);
-//     })
-//     .then((data) => {
-//       console.log(data);
-//       getWeather(data[0]);
-//       getForecast(data[1]);
-//     });
-// };
 
 const fetchWeatherStockholm = () => {
   fetch(API_URL_STOCKHOLM)
@@ -195,5 +216,49 @@ buttonCity.addEventListener("click", () => {
   }
 });
 
-// invoke the function when it starts
-fetchWeatherStockholm();
+const fetchWeather = () => {
+  fetch(
+    `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=${API_KEY}`
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      getWeather(data);
+    })
+    .catch((error) => {
+      console.error("Error: ", error);
+      weatherForecast.innerHTML = /*html*/ `
+              <div class="error-text">Ooops! Please try again.</div>
+              <div class="search-instructions">If the city you searched for is not in the country you intended please submit the country code as well. For example, instead of writing <i>Melbourne</i> write <i>Melbourne, AU</i>.</div>
+          `;
+    });
+  fetch(
+    `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&APPID=${API_KEY}`
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      getForecast(data);
+    });
+  currentWeather.innerHTML = "";
+  cityName.innerHTML = "";
+  weatherForecast.innerHTML = "";
+};
+
+const changeCity = () => {
+  // console.log(chosenCity.value)
+  city = chosenCity.value;
+  fetchWeather();
+  chosenCity.value = "";
+};
+
+searchButton.addEventListener("click", () => {
+  changeCity();
+});
+
+chosenCity.addEventListener("keyup", (event) => {
+  if (event.key === "Enter") {
+    changeCity();
+  }
+});
+
+// start display
+fetchWeather();
